@@ -11,7 +11,7 @@ const Home = () => {
           <p className="lead text-white mb-4">
             Ofrecemos los mejores servicios para tu cuidado y bienestar.
           </p>
-          <Link to="/servicios" className="btn btn-primary btn-lg">
+          <Link to="/services" className="btn btn-primary btn-lg">
             Servicios
           </Link>
         </div>

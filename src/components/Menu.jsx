@@ -5,7 +5,6 @@ export default function Menu() {
     const navigate = useNavigate();
     const [token, setToken] = useState("");
 
-    debugger
     useEffect(() => {
         const t = sessionStorage.getItem('token');
         if (t !== token) {
@@ -15,6 +14,10 @@ export default function Menu() {
 
     function logout() {
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('email');
+        sessionStorage.removeItem('id');
+        sessionStorage.removeItem('role');
+        sessionStorage.removeItem('username');
         setToken("");
         navigate('/');
     }
@@ -32,7 +35,7 @@ export default function Menu() {
                                 <Link className="nav-link" to="/">Inicio</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/vehiculos">Servicios</Link>
+                                <Link className="nav-link" to="/services">Servicios</Link>
                             </li>
                             <li className="nav-item dropdown">
                                 <Link
@@ -46,7 +49,7 @@ export default function Menu() {
                                 </Link>
                                 <ul className="dropdown-menu">
                                     <li><Link className="dropdown-item" to="/clinica">Hacer reserva</Link></li>
-                                    <li><Link className="dropdown-item" to="/blog">Mis reservas</Link></li>
+                                    <li><Link className="dropdown-item" to="/reservations">Mis reservas</Link></li>
                                 </ul>
                             </li>
                         </ul>
@@ -75,7 +78,7 @@ export default function Menu() {
                                 <Link className="nav-link" to="/">Inicio</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/vehiculos">Servicios</Link>
+                                <Link className="nav-link" to="/services">Servicios</Link>
                             </li>
                         </ul>
                     </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import api from "./../config/api.json"
+import api from "../config/api.json"
 
 export default function Login(){
     const confToast = {
@@ -57,16 +57,21 @@ export default function Login(){
             body: JSON.stringify(usuario)
         }
 
-        debugger;
         const url = `${api.apiURL}/user/login`;
         try {
+            debugger
             const res = await fetch(url, parametros);
             const body = await res.json();
 
             if (res.ok) {
                 sessionStorage.setItem('token', body.credentials);
+                sessionStorage.setItem('username', body.data.name);
+                sessionStorage.setItem('email', body.data.email);
+                sessionStorage.setItem('id', body.data.id);
+                sessionStorage.setItem('role', body.data.role);
+
                 console.log(sessionStorage.getItem('token'))
-                toast.success(`Bienvenido ${body.data.name}`, confToast);
+                toast.success(`Bienvenido ${body.data.name} (${body.data.role})`, confToast);
                 navigate("/");
             } else {
                 toast.error(body.message, confToast);
