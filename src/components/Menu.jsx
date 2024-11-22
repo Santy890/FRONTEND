@@ -1,50 +1,38 @@
-import { Link, useNavigate } from 'react-router-dom'
-
-
-import { useEffect, useState } from 'react';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function Menu() {
     const navigate = useNavigate();
-
     const [token, setToken] = useState("");
 
-    // useEffect(() => {
-    //     const t = sessionStorage.getItem('token')
-    //     if (t !== token) {
-    //         setToken(t)
-    //         //significa actualizar mi estado interno para tener el ultimo token valido siempre
-    //     }
-    // });
+    debugger
+    useEffect(() => {
+        const t = sessionStorage.getItem('token');
+        if (t !== token) {
+            setToken(t); // Actualiza el token al último disponible
+        }
+    });
 
+    function logout() {
+        sessionStorage.removeItem('token');
+        setToken("");
+        navigate('/');
+    }
 
-    // function logout() {
-    //     sessionStorage.removeItem('token');
-    //     setToken("");
-    //     navigate('/');
-    // }
+    console.log(token)
 
-    // if (token !== "" && token !== null) {
-        //var decoded = jwt_decode(token);
-        return (<>
-            <nav className="navbar navbar-expand-lg bg-body-tertiary">
+    if (token !== "" && token !== null) {
+        // Menú para usuarios logeados
+        return (
+            <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
                 <div className="container-fluid">
                     <div className="collapse navbar-collapse" id="navbarNavDropdown">
                         <ul className="navbar-nav">
                             <li className="nav-item">
-                                <Link
-                                    className="nav-link"
-                                    to="/home">
-                                    Inicio
-                                </Link>
+                                <Link className="nav-link" to="/">Inicio</Link>
                             </li>
                             <li className="nav-item">
-                                <Link
-                                    className="nav-link active"
-                                    aria-current="page"
-                                    to="/vehiculos">
-                                    Servicios
-                                </Link>
+                                <Link className="nav-link" to="/vehiculos">Servicios</Link>
                             </li>
                             <li className="nav-item dropdown">
                                 <Link
@@ -52,7 +40,8 @@ export default function Menu() {
                                     role="button"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
-                                    to="#">
+                                    to="#"
+                                >
                                     Reservas
                                 </Link>
                                 <ul className="dropdown-menu">
@@ -62,37 +51,43 @@ export default function Menu() {
                             </li>
                         </ul>
                     </div>
-                    <ul className="navbar-nav ml-auto">
+                    <ul className="navbar-nav ms-auto">
                         <li className="nav-item">
                             <button
-                                onClick={() => logout()}
-                                className='btn btn-outline-danger btn-sm'>
-                                <span
-                                    className="material-symbols-outlined">
-                                    Cerrar Sesión
-                                </span>
+                                onClick={logout}
+                                className="btn btn-outline-danger btn-sm"
+                            >
+                                Cerrar Sesión
                             </button>
                         </li>
                     </ul>
                 </div>
             </nav>
-        </>);
-    // } else {
-    //     return (
-    //         <>
-    //             <nav className="navbar navbar-expand-lg bg-body-tertiary">
-    //                 <div className="container-fluid">
-    //                     <div className="collapse navbar-collapse" id="navbarNav">
-    //                         <ul className="navbar-nav ms-auto">
-    //                             <li className="nav-item">
-    //                                 <Link to="/login" className='nav-link'>
-    //                                     Login</Link>
-    //                             </li>
-    //                         </ul>
-    //                     </div>
-    //                 </div>
-    //             </nav >
-    //         </>
-    //     );
-    // }
+        );
+    } else {
+        // Menú para usuarios no logeados
+        return (
+            <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
+                <div className="container-fluid">
+                    <div className="collapse navbar-collapse" id="navbarNavDropdown">
+                        <ul className="navbar-nav">
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/">Inicio</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/vehiculos">Servicios</Link>
+                            </li>
+                        </ul>
+                    </div>
+                    <ul className="navbar-nav ms-auto">
+                        <li className="nav-item">
+                            <Link to="/login" className="nav-link">
+                                <button className="btn btn-outline-primary btn-sm">Login</button>
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        );
+    }
 }

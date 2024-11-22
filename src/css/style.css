@@ -1,0 +1,15 @@
+/* Estilos básicos */
+body {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    margin: 0;
+    padding: 0;
+    background-color: #FFBF00;
+}
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
