@@ -7,6 +7,8 @@ import NotFound from './pages/NotFound';
 import { ToastContainer } from 'react-toastify';
 import Service from './pages/Services';
 import UserReservations from './pages/UserReservations';
+import CreateReservation from "./pages/CreateReservation";
+import ProfessionalReservation from './pages/ProfessionalReservation';
 
 
 function App() {
@@ -21,6 +23,11 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/services" element={<Service />} />
                     <Route path="/reservations" element={<UserReservations />} />
+                    <Route path="/create/reservation" element={<CreateReservation/>} />
+                    <Route path="/manage/reservations" element={<ProfessionalReservation/>} />
+
+
+
 
                     <Route path="*" element={<NotFound />} />
                 </Routes>

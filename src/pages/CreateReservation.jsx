@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import api from "./../config/api.json"
+import api from "../config/api.json"
 
-export default function HacerReserva() {
+export default function CreateReservation() {
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState("");
     const [date, setDate] = useState("");
@@ -12,13 +12,10 @@ export default function HacerReserva() {
     const [selectedSchedule, setSelectedSchedule] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const api = {
-        apiURL: "http://localhost:8080", // Cambiar según la configuración del back
-    };
-
     const userId = sessionStorage.getItem("id");
     const token = sessionStorage.getItem("token");
 
+    console.log(date)
     useEffect(() => {
         if (!token) {
             alert("Debes iniciar sesión como cliente para hacer una reserva.");
@@ -53,7 +50,7 @@ export default function HacerReserva() {
     const fetchSchedules = async () => {
         if (!date) return;
 
-        const url = `${api.apiURL}/schedule/available?date=${date}`;
+        const url = `${api.apiURL}/schedule/day/${day}`;
         try {
             const res = await fetch(url, {
                 method: "GET",
