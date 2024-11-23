@@ -48,7 +48,7 @@ export default function Menu() {
                                     Reservas
                                 </Link>
                                 <ul className="dropdown-menu">
-                                    <li><Link className="dropdown-item" to="/clinica">Hacer reserva</Link></li>
+                                    <li><Link className="dropdown-item" to="/hacerReserva">Hacer reserva</Link></li>
                                     <li><Link className="dropdown-item" to="/reservations">Mis reservas</Link></li>
                                 </ul>
                             </li>
