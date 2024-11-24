@@ -5,20 +5,52 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from "../config/api.json"
 
 export default function CreateReservation() {
+    const confToast = {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+    }
+
+    const weekDays = [
+        "domingo", 
+        "lunes", 
+        "martes", 
+        "miercoles", 
+        "jueves", 
+        "viernes", 
+        "sabado"
+    ];
+
+
     const [services, setServices] = useState([]);
     const [selectedService, setSelectedService] = useState("");
     const [date, setDate] = useState("");
-    const [availableSchedules, setAvailableSchedules] = useState([]);
+    const [schedules, setSchedules] = useState([]);
     const [selectedSchedule, setSelectedSchedule] = useState("");
     const [loading, setLoading] = useState(false);
 
     const userId = sessionStorage.getItem("id");
     const token = sessionStorage.getItem("token");
 
-    console.log(date)
+    const obtainDay = (date) =>{
+        const dateConverted = new Date(date);
+        
+        if (isNaN(dateConverted)) {
+            throw new Error("Formato de fecha inválido");
+        }
+        
+        const day = dateConverted.getDay(); 
+        return weekDays[day+1]; 
+    }
+
     useEffect(() => {
         if (!token) {
-            alert("Debes iniciar sesión como cliente para hacer una reserva.");
+            toast.error("Debes iniciar sesión como cliente para hacer una reserva.", confToast);
             return;
         }
 
@@ -37,10 +69,10 @@ export default function CreateReservation() {
                 if (res.ok) {
                     setServices(body);
                 } else {
-                    console.error(body.message);
+                    toast.error(body.message, confToast);
                 }
             } catch (error) {
-                console.error("Error al obtener los servicios:", error.message);
+                toast.error(`Error al obtener los servicios: ${error.message}`, confToast);
             }
         };
 
@@ -49,9 +81,11 @@ export default function CreateReservation() {
 
     const fetchSchedules = async () => {
         if (!date) return;
-
-        const url = `${api.apiURL}/schedule/day/${day}`;
         try {
+            const day = obtainDay(date);
+            console.log(day)
+            const url = `${api.apiURL}/schedule/day/${day}`;
+
             const res = await fetch(url, {
                 method: "GET",
                 headers: {
@@ -62,28 +96,28 @@ export default function CreateReservation() {
             const body = await res.json();
 
             if (res.ok) {
-                setAvailableSchedules(body);
+                setSchedules(body);
             } else {
-                console.error(body.message);
+                toast.error(body.message, confToast);
             }
         } catch (error) {
-            console.error("Error al obtener los horarios disponibles:", error.message);
+            toast.error(`Error al obtener los horarios disponibles: ${error.message}` , confToast);
         }
     };
 
     const handleReservation = async () => {
         if (!selectedService || !date || !selectedSchedule) {
-            alert("Por favor, completa todos los campos.");
+            toast.error("Por favor, completa todos los campos", confToast);
             return;
         }
-
-        const url = `${api.apiURL}/reserv`;
-        const body = {
+        debugger
+        const url = `${api.apiURL}/reserv/create`;
+        const body = {data:{
             id_customer: userId,
             id_service: selectedService,
             id_schedule: selectedSchedule,
             date,
-        };
+        }};
 
         setLoading(true);
 
@@ -100,12 +134,13 @@ export default function CreateReservation() {
             const responseBody = await res.json();
 
             if (res.ok) {
-                alert("Reserva realizada con éxito.");
+                toast.success("Reserva realizada con éxito", confToast);
             } else {
-                alert(`Error: ${responseBody.message}`);
+                console.log(responseBody)
+                toast.error(`Error: ${responseBody.message}`, confToast);
             }
         } catch (error) {
-            console.error("Error al realizar la reserva:", error.message);
+            toast.error("Error al realizar la reserva:", error.message, confToast);
         } finally {
             setLoading(false);
         }
@@ -153,9 +188,9 @@ export default function CreateReservation() {
                     onChange={(e) => setSelectedSchedule(e.target.value)}
                 >
                     <option value="">Seleccionar...</option>
-                    {availableSchedules.map((schedule) => (
+                    {schedules.map((schedule) => (
                         <option key={schedule.id_schedule} value={schedule.id_schedule}>
-                            {schedule.time}
+                            {schedule.start_hour}
                         </option>
                     ))}
                 </select>
