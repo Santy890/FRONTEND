@@ -5,17 +5,31 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from "../config/api.json"
 
 export default function AdminReservations() {
+
+    const confToast = {
+        position: 'bottom-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+    }
+
     const [reservations, setReservations] = useState([]);
     const [schedules, setSchedules] = useState([]);
     const [loading, setLoading] = useState(true);
     
-
     const token = sessionStorage.getItem("token");
+    const id = sessionStorage.getItem("id");
 
+    
     useEffect(() => {
         const fetchReservations = async () => {
-            const url = `${api.apiURL}/reserv`; // Endpoint para obtener reservas
+            const url = `${api.apiURL}/reserv/pro/${id}`; // Endpoint para obtener reservas
             try {
+
                 const res = await fetch(url, {
                     method: "GET",
                     headers: {
@@ -28,17 +42,17 @@ export default function AdminReservations() {
                 if (res.ok) {
                     setReservations(body);
                 } else {
-                    console.error(body.message);
+                    toast.error(body.message, confToast);
                 }
             } catch (error) {
-                console.error("Error al obtener reservas:", error.message);
+                toast.error(`Error al obtener reservas: ${error.message}`, confToast);
             } finally {
                 setLoading(false);
             }
         };
 
         const fetchSchedules = async () => {
-            const url = `${api.apiURL}/schedules`; // Endpoint para obtener horarios
+            const url = `${api.apiURL}/schedule`; // Endpoint para obtener horarios
             try {
                 const res = await fetch(url, {
                     method: "GET",
@@ -52,33 +66,37 @@ export default function AdminReservations() {
                 if (res.ok) {
                     setSchedules(body);
                 } else {
-                    console.error(body.message);
+                    toast.error(body.message, confToast);
                 }
             } catch (error) {
-                console.error("Error al obtener horarios:", error.message);
+                toast.error(`Error al obtener horarios: ${error.message}`);
             }
         };
 
         fetchReservations();
         fetchSchedules();
     }, [token]);
-
+    
     const updateReservation = async (id_reservation, updatedFields) => {
-        const url = `${api.apiURL}/reservation/${id_reservation}`;
+
+        console.log(updatedFields)
+        const url = `${api.apiURL}/reserv/update/${id_reservation}`;
         try {
+            console.log(id_reservation)
             const res = await fetch(url, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
                 },
-                body: JSON.stringify(updatedFields),
-            });
+                body: JSON.stringify({ data: updatedFields })
+
+                });
 
             const body = await res.json();
 
             if (res.ok) {
-                alert("Reserva actualizada con éxito.");
+                toast.success("Reserva actualizada con éxito", confToast);
                 setReservations((prev) =>
                     prev.map((reserva) =>
                         reserva.id_reservation === id_reservation
@@ -87,10 +105,11 @@ export default function AdminReservations() {
                     )
                 );
             } else {
-                alert(`Error: ${body.message}`);
+                toast.error(`Error: ${body.message}`, confToast);
             }
         } catch (error) {
-            console.error("Error al actualizar la reserva:", error.message);
+            console.log(error)
+            toast.error(`Error al actualizar la reserva: ${error.message}`, confToast);
         }
     };
 
@@ -137,7 +156,7 @@ export default function AdminReservations() {
                                                 key={schedule.id_schedule}
                                                 value={schedule.id_schedule}
                                             >
-                                                {schedule.time}
+                                                {schedule.start_hour}
                                             </option>
                                         ))}
                                     </select>

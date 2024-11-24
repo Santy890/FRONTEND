@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 export default function Menu() {
-    debugger
     const navigate = useNavigate();
     const [token, setToken] = useState("");
     const [role, setRole] = useState(""); // Estado para almacenar el rol del usuario
