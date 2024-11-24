@@ -83,7 +83,6 @@ export default function CreateReservation() {
         if (!date) return;
         try {
             const day = obtainDay(date);
-            console.log(day)
             const url = `${api.apiURL}/schedule/day/${day}`;
 
             const res = await fetch(url, {
@@ -110,7 +109,6 @@ export default function CreateReservation() {
             toast.error("Por favor, completa todos los campos", confToast);
             return;
         }
-        debugger
         const url = `${api.apiURL}/reserv/create`;
         const body = {data:{
             id_customer: userId,
@@ -136,7 +134,6 @@ export default function CreateReservation() {
             if (res.ok) {
                 toast.success("Reserva realizada con éxito", confToast);
             } else {
-                console.log(responseBody)
                 toast.error(`Error: ${responseBody.message}`, confToast);
             }
         } catch (error) {

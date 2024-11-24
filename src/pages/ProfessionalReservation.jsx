@@ -1,35 +1,52 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import api from "../config/api.json"
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import api from "../config/api.json";
 
 export default function AdminReservations() {
-
     const confToast = {
-        position: 'bottom-center',
+        position: "bottom-center",
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: 'light',
-    }
+        theme: "light",
+    };
+
+    const weekDays = [
+        "domingo",
+        "lunes",
+        "martes",
+        "miercoles",
+        "jueves",
+        "viernes",
+        "sabado",
+    ];
+
+    const obtainDay = (date) => {
+        const dateConverted = new Date(date);
+
+        if (isNaN(dateConverted)) {
+            throw new Error("Formato de fecha inválido");
+        }
+
+        const day = dateConverted.getDay();
+        return weekDays[day]; // Retorna el día en español.
+    };
 
     const [reservations, setReservations] = useState([]);
-    const [schedules, setSchedules] = useState([]);
+    const [scheduleByDay, setScheduleByDay] = useState({});
     const [loading, setLoading] = useState(true);
-    
+
     const token = sessionStorage.getItem("token");
     const id = sessionStorage.getItem("id");
 
-    
     useEffect(() => {
         const fetchReservations = async () => {
-            const url = `${api.apiURL}/reserv/pro/${id}`; // Endpoint para obtener reservas
+            const url = `${api.apiURL}/reserv/pro/${id}`;
             try {
-
                 const res = await fetch(url, {
                     method: "GET",
                     headers: {
@@ -38,7 +55,6 @@ export default function AdminReservations() {
                     },
                 });
                 const body = await res.json();
-
                 if (res.ok) {
                     setReservations(body);
                 } else {
@@ -51,47 +67,43 @@ export default function AdminReservations() {
             }
         };
 
-        const fetchSchedules = async () => {
-            const url = `${api.apiURL}/schedule`; // Endpoint para obtener horarios
-            try {
-                const res = await fetch(url, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: token,
-                    },
-                });
-                const body = await res.json();
-
-                if (res.ok) {
-                    setSchedules(body);
-                } else {
-                    toast.error(body.message, confToast);
-                }
-            } catch (error) {
-                toast.error(`Error al obtener horarios: ${error.message}`);
-            }
-        };
-
         fetchReservations();
-        fetchSchedules();
-    }, [token]);
-    
-    const updateReservation = async (id_reservation, updatedFields) => {
+    }, [id, token]);
 
-        console.log(updatedFields)
+    const fetchSchedulesByDay = async (day) => {
+        if (scheduleByDay[day]) return; // Evita solicitudes repetidas.
+
+        const url = `${api.apiURL}/schedule/day/${day}`;
+        try {
+            const res = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            });
+            const body = await res.json();
+            if (res.ok) {
+                setScheduleByDay((prev) => ({ ...prev, [day]: body }));
+            } else {
+                toast.error(`Error al obtener horarios para ${day}: ${body.message}`, confToast);
+            }
+        } catch (error) {
+            toast.error(`Error al obtener horarios: ${error.message}`, confToast);
+        }
+    };
+
+    const updateReservation = async (id_reservation, updatedFields) => {
         const url = `${api.apiURL}/reserv/update/${id_reservation}`;
         try {
-            console.log(id_reservation)
             const res = await fetch(url, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: token,
                 },
-                body: JSON.stringify({ data: updatedFields })
-
-                });
+                body: JSON.stringify({ data: updatedFields }),
+            });
 
             const body = await res.json();
 
@@ -108,10 +120,16 @@ export default function AdminReservations() {
                 toast.error(`Error: ${body.message}`, confToast);
             }
         } catch (error) {
-            console.log(error)
             toast.error(`Error al actualizar la reserva: ${error.message}`, confToast);
         }
     };
+
+    useEffect(() => {
+        reservations.forEach((reserva) => {
+            const day = obtainDay(reserva.date); // Obtiene el día en español.
+            fetchSchedulesByDay(day); // Llama a la función para cargar los horarios si no están ya cargados.
+        });
+    }, [reservations]); // Se ejecuta cada vez que cambian las reservas.
 
     if (loading) {
         return <p>Cargando reservas...</p>;
@@ -132,65 +150,61 @@ export default function AdminReservations() {
                             <th>Horario</th>
                             <th>Estado</th>
                             <th>Fecha</th>
-                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {reservations.map((reserva) => (
-                            <tr key={reserva.id_reservation}>
-                                <td>{reserva.id_reservation}</td>
-                                <td>{reserva.id_customer}</td>
-                                <td>{reserva.id_service}</td>
-                                <td>
-                                    <select
-                                        className="form-select"
-                                        value={reserva.id_schedule}
-                                        onChange={(e) =>
-                                            updateReservation(reserva.id_reservation, {
-                                                id_schedule: e.target.value,
-                                            })
-                                        }
-                                    >
-                                        {schedules.map((schedule) => (
-                                            <option
-                                                key={schedule.id_schedule}
-                                                value={schedule.id_schedule}
-                                            >
-                                                {schedule.start_hour}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </td>
-                                <td>
-                                    <select
-                                        className="form-select"
-                                        value={reserva.state}
-                                        onChange={(e) =>
-                                            updateReservation(reserva.id_reservation, {
-                                                state: e.target.value,
-                                            })
-                                        }
-                                    >
-                                        <option value="RESERVADO">RESERVADO</option>
-                                        <option value="FINALIZADO">FINALIZADO</option>
-                                        <option value="CANCELADO">CANCELADO</option>
-                                    </select>
-                                </td>
-                                <td>{new Date(reserva.date).toLocaleDateString()}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() =>
-                                            updateReservation(reserva.id_reservation, {
-                                                state: "CANCELADO",
-                                            })
-                                        }
-                                    >
-                                        Cancelar
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {reservations.map((reserva) => {
+                            const day = obtainDay(reserva.date); // Obtiene el día en español.
+                            const availableSchedules = scheduleByDay[day] || []; // Obtiene los horarios disponibles.
+
+                            return (
+                                <tr key={reserva.id_reservation}>
+                                    <td>{reserva.id_reservation}</td>
+                                    <td>{reserva.customer}</td>
+                                    <td>{reserva.service}</td>
+                                    <td>
+                                        <select
+                                            className="form-select"
+                                            value={reserva.schedule}
+                                            onChange={async (e) =>
+                                                updateReservation(reserva.id_reservation, {
+                                                    id_schedule: e.target.value
+                                                })
+                                            }
+                                        >
+                                            {availableSchedules.length > 0 ? (
+                                                availableSchedules.map((schedule) => (
+                                                    <option
+                                                        key={schedule.id_schedule}
+                                                        value={schedule.id_schedule}
+                                                    >
+                                                        {schedule.start_hour}
+                                                    </option>
+                                                ))
+                                            ) : (
+                                                <option>Cargando horarios...</option>
+                                            )}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select
+                                            className="form-select"
+                                            value={reserva.state}
+                                            onChange={(e) =>
+                                                updateReservation(reserva.id_reservation, {
+                                                    state: e.target.value,
+                                                })
+                                            }
+                                        >
+                                            <option value="RESERVADO">RESERVADO</option>
+                                            <option value="FINALIZADO">FINALIZADO</option>
+                                            <option value="CANCELADO">CANCELADO</option>
+                                        </select>
+                                    </td>
+                                    <td>{new Date(reserva.date).toLocaleDateString()}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             )}

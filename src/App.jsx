@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import React from 'react';
 import Login from "./pages/Login";
 import Menu from "./components/Menu";
 import Home from "./pages/Home";
 import NotFound from './pages/NotFound';
-import { ToastContainer } from 'react-toastify';
 import Service from './pages/Services';
 import UserReservations from './pages/UserReservations';
 import CreateReservation from "./pages/CreateReservation";

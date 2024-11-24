@@ -59,7 +59,6 @@ export default function Login(){
 
         const url = `${api.apiURL}/user/login`;
         try {
-            debugger
             const res = await fetch(url, parametros);
             const body = await res.json();
 
@@ -69,8 +68,6 @@ export default function Login(){
                 sessionStorage.setItem('email', body.data.email);
                 sessionStorage.setItem('id', body.data.id);
                 sessionStorage.setItem('role', body.data.role);
-
-                console.log(sessionStorage.getItem('token'))
                 toast.success(`Bienvenido ${body.data.name} (${body.data.role})`, confToast);
                 navigate("/");
             } else {

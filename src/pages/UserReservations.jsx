@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from "./../config/api.json"
 
-export default function Reservations() {
+export default function UserReservations() {
     const confToast = {
         position: 'bottom-center',
         autoClose: 5000,
@@ -31,7 +31,6 @@ export default function Reservations() {
 
             const url = `${api.apiURL}/reserv/customer/${userId}`;
             try {
-                debugger
                 const res = await fetch(url, {
                     method: "GET",
                     headers: {
@@ -67,7 +66,6 @@ export default function Reservations() {
                 <p className="text-center">No tienes reservas.</p>
             ) : (
                 <div className="row">
-                    {console.log(reservations)}
                     {reservations.map((reservation) => (
                         <div className="col-md-6 mb-4" key={reservation.id_reservation}>
                             <div className="card h-100">
@@ -81,10 +79,10 @@ export default function Reservations() {
                                         {new Date(reservation.date).toLocaleDateString()}
                                     </p>
                                     <p className="card-text">
-                                        <strong>Horario ID:</strong> {reservation.id_schedule}
+                                        <strong>Horario:</strong> {reservation.schedule}
                                     </p>
                                     <p className="card-text">
-                                        <strong>Servicio ID:</strong> {reservation.id_service}
+                                        <strong>Servicio:</strong> {reservation.service}
                                     </p>
                                 </div>
                             </div>
