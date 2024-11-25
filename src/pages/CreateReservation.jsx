@@ -111,7 +111,7 @@ export default function CreateReservation() {
         }
         const url = `${api.apiURL}/reserv/create`;
         const body = {data:{
-            id_customer: userId,
+            id_user: userId,
             id_service: selectedService,
             id_schedule: selectedSchedule,
             date,
@@ -134,6 +134,7 @@ export default function CreateReservation() {
             if (res.ok) {
                 toast.success("Reserva realizada con éxito", confToast);
             } else {
+                console.log(responseBody)
                 toast.error(`Error: ${responseBody.message}`, confToast);
             }
         } catch (error) {

@@ -4,24 +4,24 @@ import { useState, useEffect } from "react";
 export default function Menu() {
     const navigate = useNavigate();
     const [token, setToken] = useState("");
-    const [role, setRole] = useState(""); // Estado para almacenar el rol del usuario
+    const [role, setRole] = useState(""); 
 
     useEffect(() => {
         const t = sessionStorage.getItem("token");
-        const r = sessionStorage.getItem("role"); // Obtener el rol del sessionStorage
+        const r = sessionStorage.getItem("role"); 
         if (t !== token) {
-            setToken(t); // Actualiza el token al último disponible
+            setToken(t);
         }
         if (r !== role) {
-            setRole(r); // Actualiza el rol al último disponible
+            setRole(r);
         }
-    }); // Agregamos dependencias para evitar renders innecesarios
+    }); 
 
     function logout() {
-        sessionStorage.clear(); // Limpia todos los datos del sessionStorage
+        sessionStorage.clear(); 
         setToken("");
         setRole("");
-        navigate("/"); // Redirige al usuario al inicio
+        navigate("/"); 
     }
 
     const isLoggedIn = token !== "" && token !== null;
@@ -29,7 +29,6 @@ export default function Menu() {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-body-tertiary">
             <div className="container-fluid">
-                {/* Logo y botón para pantallas pequeñas */}
                 <Link className="navbar-brand" to="/">
                     Peluquería
                 </Link>
@@ -45,7 +44,6 @@ export default function Menu() {
                     <span className="navbar-toggler-icon"></span>
                 </button>
 
-                {/* Contenido del menú */}
                 <div className="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul className="navbar-nav">
                         <li className="nav-item">
@@ -107,7 +105,6 @@ export default function Menu() {
                         )}
                     </ul>
 
-                    {/* Botones de sesión */}
                     <ul className="navbar-nav ms-auto">
                         {isLoggedIn ? (
                             <li className="nav-item">

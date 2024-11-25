@@ -33,7 +33,7 @@ export default function AdminReservations() {
         }
 
         const day = dateConverted.getDay();
-        return weekDays[day]; // Retorna el día en español.
+        return weekDays[day];
     };
 
     const [reservations, setReservations] = useState([]);
@@ -45,6 +45,7 @@ export default function AdminReservations() {
 
     useEffect(() => {
         const fetchReservations = async () => {
+            debugger
             const url = `${api.apiURL}/reserv/pro/${id}`;
             try {
                 const res = await fetch(url, {
@@ -71,7 +72,7 @@ export default function AdminReservations() {
     }, [id, token]);
 
     const fetchSchedulesByDay = async (day) => {
-        if (scheduleByDay[day]) return; // Evita solicitudes repetidas.
+        if (scheduleByDay[day]) return;
 
         const url = `${api.apiURL}/schedule/day/${day}`;
         try {
@@ -126,10 +127,10 @@ export default function AdminReservations() {
 
     useEffect(() => {
         reservations.forEach((reserva) => {
-            const day = obtainDay(reserva.date); // Obtiene el día en español.
-            fetchSchedulesByDay(day); // Llama a la función para cargar los horarios si no están ya cargados.
+            const day = obtainDay(reserva.date);
+            fetchSchedulesByDay(day);
         });
-    }, [reservations]); // Se ejecuta cada vez que cambian las reservas.
+    }, [reservations]);
 
     if (loading) {
         return <p>Cargando reservas...</p>;
@@ -154,8 +155,8 @@ export default function AdminReservations() {
                     </thead>
                     <tbody>
                         {reservations.map((reservation) => {
-                            const day = obtainDay(reservation.date); // Obtiene el día en español.
-                            const availableSchedules = scheduleByDay[day] || []; // Obtiene los horarios disponibles.
+                            const day = obtainDay(reservation.date);
+                            const schedules = scheduleByDay[day] || [];
 
                             return (
                                 <tr key={reservation.id_reservation}>
@@ -164,28 +165,47 @@ export default function AdminReservations() {
                                     <td>{reservation.service}</td>
                                     <td>
                                         <select
-                                            className="form-select"
-                                            value={reservation.schedule}
+                                            className="form-select" 
+                                            value={reservation.id_schedule || ""}
                                             onChange={async (e) =>
                                                 updateReservation(reservation.id_reservation, {
-                                                    id_schedule: e.target.value
+                                                    id_schedule: e.target.value,
                                                 })
                                             }
                                         >
-                                            {availableSchedules.length > 0 ? (
-                                                availableSchedules.map((schedule) => (
-                                                    <option
-                                                        key={schedule.id_schedule}
-                                                        value={schedule.id_schedule}
-                                                    >
-                                                        {schedule.start_hour}
-                                                    </option>
-                                                ))
+                                            {schedules.length > 0 ? (
+                                                schedules.some(schedule => schedule.id_schedule === reservation.id_schedule) ? (
+                                                    schedules.map((schedule) => (
+                                                        <option
+                                                            key={schedule.id_schedule}
+                                                            value={schedule.id_schedule}
+                                                        >
+                                                            {schedule.start_hour}
+                                                        </option>
+                                                    ))
+                                                ) : (
+                                                    <>
+                                                        <option value="" disabled>
+                                                            {reservation.schedule}
+                                                        </option>
+                                                        {schedules.map((schedule) => (
+                                                            <option
+                                                                key={schedule.id_schedule}
+                                                                value={schedule.id_schedule}
+                                                            >
+                                                                {schedule.start_hour}
+                                                            </option>
+                                                        ))}
+                                                    </>
+                                                )
                                             ) : (
-                                                <option>Cargando horarios...</option>
+                                                <option value="" disabled>
+                                                    Cargando horarios...
+                                                </option>
                                             )}
                                         </select>
                                     </td>
+
                                     <td>
                                         <select
                                             className="form-select"
