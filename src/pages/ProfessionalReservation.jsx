@@ -153,21 +153,21 @@ export default function AdminReservations() {
                         </tr>
                     </thead>
                     <tbody>
-                        {reservations.map((reserva) => {
-                            const day = obtainDay(reserva.date); // Obtiene el día en español.
+                        {reservations.map((reservation) => {
+                            const day = obtainDay(reservation.date); // Obtiene el día en español.
                             const availableSchedules = scheduleByDay[day] || []; // Obtiene los horarios disponibles.
 
                             return (
-                                <tr key={reserva.id_reservation}>
-                                    <td>{reserva.id_reservation}</td>
-                                    <td>{reserva.customer}</td>
-                                    <td>{reserva.service}</td>
+                                <tr key={reservation.id_reservation}>
+                                    <td>{reservation.id_reservation}</td>
+                                    <td>{reservation.customer}</td>
+                                    <td>{reservation.service}</td>
                                     <td>
                                         <select
                                             className="form-select"
-                                            value={reserva.schedule}
+                                            value={reservation.schedule}
                                             onChange={async (e) =>
-                                                updateReservation(reserva.id_reservation, {
+                                                updateReservation(reservation.id_reservation, {
                                                     id_schedule: e.target.value
                                                 })
                                             }
@@ -189,9 +189,9 @@ export default function AdminReservations() {
                                     <td>
                                         <select
                                             className="form-select"
-                                            value={reserva.state}
+                                            value={reservation.state}
                                             onChange={(e) =>
-                                                updateReservation(reserva.id_reservation, {
+                                                updateReservation(reservation.id_reservation, {
                                                     state: e.target.value,
                                                 })
                                             }
@@ -201,7 +201,7 @@ export default function AdminReservations() {
                                             <option value="CANCELADO">CANCELADO</option>
                                         </select>
                                     </td>
-                                    <td>{new Date(reserva.date).toLocaleDateString()}</td>
+                                    <td>{new Date(reservation.date).toLocaleDateString()}</td>
                                 </tr>
                             );
                         })}
